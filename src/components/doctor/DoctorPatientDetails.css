@@ -1,0 +1,120 @@
+.details-container {
+    padding: 40px;
+    background: #f8f9fa;
+  }
+  
+  .patient-info {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+  }
+  
+  .patient-info h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .patient-info span {
+    color: #28a745;
+    font-weight: 600;
+  }
+  
+  .patient-info p {
+    margin: 4px 0;
+  }
+  
+  .patient-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-primary, .btn-secondary {
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .btn-primary {
+    background-color: #28a745;
+    color: white;
+  }
+  .btn-primary:hover {
+    background-color: #218838;
+  }
+  
+  .btn-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  .btn-secondary:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .history-section {
+    margin-bottom: 30px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+    color: #28a745;
+    margin-bottom: 10px;
+  }
+  
+  .details-table {
+    width: 100%;
+    background: #fff;
+    border-collapse: collapse;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+    table-layout: fixed;
+  }
+  
+  .details-table th,
+  .details-table td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .details-table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+  }
+  
+  .details-table tbody tr:hover {
+    background-color: #f1fdf5;
+    cursor: pointer;
+  }
+  
+  .btn-open {
+    background-color: #e6f4ea;
+    color: #28a745;
+    border: 1px solid #28a745;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+  }
+  .btn-open:hover {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  

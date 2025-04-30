@@ -1,0 +1,189 @@
+.appointments-wrapper {
+    padding: 40px;
+    background-color: #f8f9fa;
+  }
+  
+  .appointments-heading {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #28a745;
+    text-align: center;
+  }
+  
+  .appointments-table {
+    width: 100%;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border-collapse: collapse;
+  }
+  
+  .appointments-table th,
+  .appointments-table td {
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .appointments-table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+  }
+  
+  .status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: uppercase;
+  }
+  
+  .status.paid {
+    background-color: #e0f7e9;
+    color: #28a745;
+  }
+  
+  .status.unpaid {
+    background-color: #fff3cd;
+    color: #d39e00;
+  }
+  
+  .status.followup {
+    background-color: #e3f2fd;
+    color: #007bff;
+  }
+  
+  .status.booked {
+    background-color: #fce4ec;
+    color: #d81b60;
+  }
+  
+  .status.report {
+    background-color: #f0f4c3;
+    color: #827717;
+  }
+  
+  .btn-accept,
+  .btn-details {
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    margin-right: 8px;
+    cursor: pointer;
+  }
+  
+  .btn-accept {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .btn-details {
+    background-color: #f1f1f1;
+    color: #5856d6;
+  }
+  
+  .btn-accept,
+.btn-details {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Accept button interactions */
+.btn-accept {
+  background-color: #28a745;
+  color: white;
+}
+.btn-accept:hover {
+  background-color: #218838;
+}
+.btn-accept:active {
+  transform: scale(0.96);
+}
+
+/* Details button interactions */
+.btn-details {
+  background-color: #f1f1f1;
+  color: #333333;
+}
+.btn-details:hover {
+  background-color: #e0e0e0;
+}
+.btn-details:active {
+  transform: scale(0.96);
+}
+.btn-accept,
+.btn-details {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-accept {
+  background-color: #28a745;
+  color: white;
+}
+.btn-accept:hover {
+  background-color: #218838;
+}
+.btn-accept:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.btn-accept.accepted {
+  background-color: #d4edda;
+  color: #155724;
+  font-weight: bold;
+  border: 1px solid #28a745;
+}
+
+.btn-details {
+  background-color: #f1f1f1;
+  color: #333;
+}
+.btn-details:hover {
+  background-color: #e0e0e0;
+}
+.btn-details:disabled {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 25px;
+}
+
+.pagination button {
+  background-color: #fff;
+  color: #374151;
+  border-radius: 4px;
+  padding: 4px 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.pagination button.active,
+.pagination button:hover {
+  background-color: #5856d6;
+  color: #fff;
+}

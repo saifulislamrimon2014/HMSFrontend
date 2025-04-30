@@ -1,0 +1,15 @@
+
+
+.back-button {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.back-button .btn {
+    display: flex;
+    align-items: center;
+}
+
+.back-button .btn svg {
+    margin-right: 8px;
+}

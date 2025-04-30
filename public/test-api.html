@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Django API</title>
+</head>
+<body>
+  <h2>Test Django API</h2>
+  <form id="testForm">
+    <label>Firebase UID:</label><br>
+    <input type="text" name="firebase_uid" value="test-uid-123"><br>
+    <label>First Name:</label><br>
+    <input type="text" name="first_name" value="John"><br>
+    <label>Last Name:</label><br>
+    <input type="text" name="last_name" value="Doe"><br>
+    <label>Email:</label><br>
+    <input type="email" name="email" value="john.doe@gmail.com"><br>
+    <label>Contact Number:</label><br>
+    <input type="text" name="contact_number" value="01123456789"><br>
+    <label>Date of Birth:</label><br>
+    <input type="date" name="date_of_birth" value="1990-01-01"><br>
+    <label>Address:</label><br>
+    <textarea name="address">123 Main St</textarea><br>
+    <label>Blood Group:</label><br>
+    <input type="text" name="blood_group" value="A+"><br>
+    <label>Email Verified:</label><br>
+    <input type="checkbox" name="email_verified"><br><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('testForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {
+        firebase_uid: formData.get('firebase_uid'),
+        first_name: formData.get('first_name'),
+        last_name: formData.get('last_name'),
+        email: formData.get('email'),
+        contact_number: formData.get('contact_number'),
+        date_of_birth: formData.get('date_of_birth'),
+        address: formData.get('address'),
+        blood_group: formData.get('blood_group'),
+        email_verified: formData.get('email_verified') === 'on',
+      };
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/save-user/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        alert(JSON.stringify(result));
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
