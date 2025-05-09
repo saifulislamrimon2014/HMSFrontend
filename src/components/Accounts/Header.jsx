@@ -1,8 +1,11 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import './Header.css';
+import { toast } from 'react-toastify';
 
 const Header = () => {
+  const navigate = useNavigate();
+
   // Style for navigation links
   const getNavLinkStyle = ({ isActive }) => ({
     color: isActive ? '#28a745' : '#000',
@@ -14,6 +17,13 @@ const Header = () => {
     fontWeight: isActive ? '600' : 'normal',
     transition: 'color 0.3s ease'
   });
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('accountant');
+    toast.success('Logged out successfully');
+    navigate('/AccountsLogin');
+  };
 
   return (
     <header style={{
@@ -77,16 +87,27 @@ const Header = () => {
           Edit Profile
         </NavLink>
 
-        <NavLink
-          to="/logout"
-          style={({ isActive }) => ({
-            ...getNavLinkStyle({ isActive }),
-            marginRight: '0'
-          })}
+        <button
+          onClick={handleLogout}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#000',
+            textDecoration: 'none',
+            margin: '0 15px',
+            marginRight: '0',
+            position: 'relative',
+            paddingBottom: '15px',
+            paddingTop: '10px',
+            fontWeight: 'normal',
+            transition: 'color 0.3s ease',
+            cursor: 'pointer',
+            fontSize: '16px'
+          }}
           className="nav-link"
         >
           Log Out
-        </NavLink>
+        </button>
       </nav>
     </header>
   );

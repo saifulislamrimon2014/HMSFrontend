@@ -1,53 +1,118 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import Header from './Header';
 import Footer from './Footer';
 
+// Define keyframes for modal animation
+const modalAnimation = `
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+body.modal-open {
+  overflow: hidden;
+}
+.modal-scrollable {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.modal-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-scrollable::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+`;
+
 const AdminPatient = () => {
+  // Add the animation styles to the document
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = modalAnimation;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
   // State for patient data, search, and modal
-  const [patients, setPatients] = useState([
-    { slNo: 1, patientId: 'P001', patientName: 'Md Rahim', phoneNumber: '018647566', joinDate: '6/4/24' },
-    { slNo: 2, patientId: 'P002', patientName: 'Fatima Khan', phoneNumber: '017552344', joinDate: '7/15/24' },
-    { slNo: 3, patientId: 'P003', patientName: 'Ali Hassan', phoneNumber: '019833456', joinDate: '6/10/24' },
-    { slNo: 4, patientId: 'P004', patientName: 'Sara Ahmed', phoneNumber: '016744567', joinDate: '8/1/24' },
-    { slNo: 5, patientId: 'P005', patientName: 'Zubair Malik', phoneNumber: '018923789', joinDate: '5/20/24' },
-    { slNo: 6, patientId: 'P006', patientName: 'Ayesha Begum', phoneNumber: '017123456', joinDate: '7/5/24' },
-    { slNo: 7, patientId: 'P007', patientName: 'Omar Farooq', phoneNumber: '019654321', joinDate: '6/25/24' },
-    { slNo: 8, patientId: 'P008', patientName: 'Nadia Islam', phoneNumber: '016789123', joinDate: '8/10/24' },
-  ]);
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModifyModal, setShowModifyModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [editedPatient, setEditedPatient] = useState({
-    patientName: '',
+    firstName: '',
+    lastName: '',
     phoneNumber: '',
-    joinDate: '',
     dob: '',
     address: '',
     email: '',
     bloodGroup: '',
+    gender: '',
+    age: '',
+    password: ''
   });
 
+  // Fetch patient data from API
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8000/api/patients/');
+        setPatients(response.data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching patients:", err);
+        setError("Failed to load patients. Please try again.");
+        toast.error("Failed to load patients. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, []);
+
   // Filter patients based on search term
-  const filteredPatients = patients.filter(patient =>
-    patient.patientId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.joinDate.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPatients = patients.filter(patient => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      (patient.patientId && patient.patientId.toString().toLowerCase().includes(searchTermLower)) ||
+      (patient.patientName && patient.patientName.toLowerCase().includes(searchTermLower)) ||
+      (patient.firstName && patient.firstName.toLowerCase().includes(searchTermLower)) ||
+      (patient.lastName && patient.lastName.toLowerCase().includes(searchTermLower)) ||
+      (patient.phoneNumber && patient.phoneNumber.toLowerCase().includes(searchTermLower)) ||
+      (patient.email && patient.email.toLowerCase().includes(searchTermLower)) ||
+      (patient.joinDate && patient.joinDate.toLowerCase().includes(searchTermLower))
+    );
+  });
 
   // Handle Modify button click
   const handleModifyClick = (patient) => {
     setSelectedPatient(patient);
     setEditedPatient({
-      patientName: patient.patientName,
-      phoneNumber: patient.phoneNumber,
-      joinDate: patient.joinDate,
-      dob: '7/9/2000', // Default DOB as per image
-      address: 'Malibagh, Dhaka',
-      email: 'example@email.com',
-      bloodGroup: 'B+',
+      firstName: patient.firstName || '',
+      lastName: patient.lastName || '',
+      phoneNumber: patient.phoneNumber || '',
+      dob: patient.dob || '',
+      address: patient.address || '',
+      email: patient.email || '',
+      bloodGroup: patient.bloodGroup || '',
+      gender: patient.gender || '',
+      age: patient.age || '',
+      password: patient.password || ''
     });
     setShowModifyModal(true);
+    // Add class to body to prevent background scrolling
+    document.body.classList.add('modal-open');
   };
 
   // Handle input changes in the modal
@@ -57,17 +122,80 @@ const AdminPatient = () => {
   };
 
   // Handle Save changes
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (selectedPatient) {
-      const updatedPatients = patients.map((patient) =>
-        patient.slNo === selectedPatient.slNo
-          ? { ...patient, patientName: editedPatient.patientName, phoneNumber: editedPatient.phoneNumber, joinDate: editedPatient.joinDate }
-          : patient
-      );
-      setPatients(updatedPatients);
-      setShowModifyModal(false);
-      setSelectedPatient(null);
-      setEditedPatient({ patientName: '', phoneNumber: '', joinDate: '', dob: '', address: '', email: '', bloodGroup: '' });
+      try {
+        setLoading(true);
+
+        // Create data object to update in MongoDB
+        const patientData = {
+          firstName: editedPatient.firstName,
+          lastName: editedPatient.lastName,
+          phoneNumber: editedPatient.phoneNumber,
+          email: editedPatient.email,
+          dob: editedPatient.dob,
+          address: editedPatient.address,
+          bloodGroup: editedPatient.bloodGroup,
+          gender: editedPatient.gender,
+          age: editedPatient.age,
+          password: editedPatient.password
+        };
+
+        // Update document in MongoDB via API
+        await axios.put(`http://localhost:8000/api/patients/update/${selectedPatient.id}/`, patientData);
+
+        // Refresh the patient list
+        const response = await axios.get('http://localhost:8000/api/patients/');
+        setPatients(response.data);
+
+        toast.success("Patient updated successfully!");
+        setShowModifyModal(false);
+        setSelectedPatient(null);
+        document.body.classList.remove('modal-open');
+        setEditedPatient({
+          firstName: '',
+          lastName: '',
+          phoneNumber: '',
+          dob: '',
+          address: '',
+          email: '',
+          bloodGroup: '',
+          gender: '',
+          age: '',
+          password: ''
+        });
+      } catch (err) {
+        console.error("Error updating patient:", err);
+        toast.error("Failed to update patient. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Handle Delete patient
+  const handleDeletePatient = async () => {
+    if (selectedPatient && window.confirm(`Are you sure you want to delete ${selectedPatient.patientName}?`)) {
+      try {
+        setLoading(true);
+
+        // Delete from MongoDB via API
+        await axios.delete(`http://localhost:8000/api/patients/delete/${selectedPatient.id}/`);
+
+        // Refresh the patient list
+        const response = await axios.get('http://localhost:8000/api/patients/');
+        setPatients(response.data);
+
+        toast.success("Patient deleted successfully!");
+        setShowModifyModal(false);
+        setSelectedPatient(null);
+        document.body.classList.remove('modal-open');
+      } catch (err) {
+        console.error("Error deleting patient:", err);
+        toast.error("Failed to delete patient. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -119,7 +247,7 @@ const AdminPatient = () => {
         <div style={{ marginBottom: '30px', textAlign: 'center' }}>
           <input
             type="text"
-            placeholder="Search by ID, Name, Phone, or Join Date..."
+            placeholder="Search by ID, Name, Phone, or Email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ ...inputStyle, paddingLeft: '35px', background: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23666" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat 10px center`, width: '300px' }}
@@ -130,46 +258,72 @@ const AdminPatient = () => {
 
         {/* Patient List Table */}
         <div style={{ overflowX: 'auto', marginBottom: '30px' }}>
-          <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 10px', backgroundColor: '#fff' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#28a745', color: '#fff' }}>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Sl No</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Patient ID</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Patient Name</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Phone Number</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Join Date</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredPatients.map((patient) => (
-                <tr key={patient.slNo} style={{ boxShadow: '0 2px 5px rgba(0,0,0,0.05)', backgroundColor: '#f9f9f9' }}>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.slNo}</td>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.patientId}</td>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.patientName}</td>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.phoneNumber}</td>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.joinDate}</td>
-                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                    <button
-                      onClick={() => handleModifyClick(patient)}
-                      style={{
-                        ...buttonStyle,
-                        backgroundColor: '#6f42c1',
-                        color: '#fff',
-                        marginRight: '5px'
-                      }}
-                      onMouseEnter={(e) => (e.target.style.backgroundColor = '#5a32a3')}
-                      onMouseLeave={(e) => (e.target.style.backgroundColor = '#6f42c1')}
-                      onMouseDown={(e) => (e.target.style.transform = 'scale(0.95)')}
-                      onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}
-                    >
-                      Modify
-                    </button>
-                  </td>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '30px' }}>
+              <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #28a745', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+              <p style={{ marginTop: '15px', color: '#666' }}>Loading patients...</p>
+            </div>
+          ) : error ? (
+            <div style={{ textAlign: 'center', padding: '30px', color: '#dc3545' }}>
+              <p>{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                style={{
+                  ...buttonStyle,
+                  backgroundColor: '#28a745',
+                  color: '#fff',
+                  marginTop: '10px'
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          ) : filteredPatients.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '30px', color: '#666' }}>
+              <p>No patients found matching your search criteria.</p>
+            </div>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 10px', backgroundColor: '#fff' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#28a745', color: '#fff' }}>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>Sl No</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>Patient ID</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>Patient Name</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>Phone Number</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>Email</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredPatients.map((patient) => (
+                  <tr key={patient.id} style={{ boxShadow: '0 2px 5px rgba(0,0,0,0.05)', backgroundColor: '#f9f9f9' }}>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.slNo}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.patientId}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.patientName}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.phoneNumber}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{patient.email}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
+                      <button
+                        onClick={() => handleModifyClick(patient)}
+                        style={{
+                          ...buttonStyle,
+                          backgroundColor: '#6f42c1',
+                          color: '#fff',
+                          marginRight: '5px'
+                        }}
+                        onMouseEnter={(e) => (e.target.style.backgroundColor = '#5a32a3')}
+                        onMouseLeave={(e) => (e.target.style.backgroundColor = '#6f42c1')}
+                        onMouseDown={(e) => (e.target.style.transform = 'scale(0.95)')}
+                        onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}
+                      >
+                        Modify
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
@@ -184,20 +338,31 @@ const AdminPatient = () => {
           backgroundColor: 'rgba(0,0,0,0.5)',
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          zIndex: 1000, // Higher z-index to ensure it's above everything
+          overflow: 'auto', // Enable scrolling
+          padding: '20px 0', // Add padding to ensure modal doesn't touch edges
+          animation: 'fadeIn 0.3s ease-out' // Apply fade in animation
         }}>
-          <div style={{
+          <div className="modal-scrollable" style={{
             backgroundColor: '#fff',
             padding: '25px',
             borderRadius: '10px',
             boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
             width: '90vw',
             maxWidth: '400px',
+            maxHeight: '80vh', // Limit height
+            overflowY: 'auto', // Enable vertical scrolling
             textAlign: 'center',
-            position: 'relative'
+            position: 'relative',
+            margin: 'auto', // Center the modal
+            animation: 'slideIn 0.3s ease-out' // Apply slide in animation
           }}>
             <button
-              onClick={() => setShowModifyModal(false)}
+              onClick={() => {
+                setShowModifyModal(false);
+                document.body.classList.remove('modal-open');
+              }}
               style={{
                 position: 'absolute',
                 top: '10px',
@@ -228,76 +393,169 @@ const AdminPatient = () => {
                 </svg>
               </div>
               <h3 style={{ color: '#28a745', fontSize: '20px', fontWeight: '500', marginBottom: '10px' }}>{selectedPatient.patientName}</h3>
-              <input
-                type="text"
-                name="patientName"
-                value={editedPatient.patientName}
-                onChange={handleInputChange}
-                placeholder="Patient Name"
-                style={{ ...inputStyle }}
-                onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
-                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
-              />
-              <input
-                type="text"
-                name="phoneNumber"
-                value={editedPatient.phoneNumber}
-                onChange={handleInputChange}
-                placeholder="Phone Number"
-                style={{ ...inputStyle }}
-                onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
-                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
-              />
-              <input
-                type="text"
-                name="joinDate"
-                value={editedPatient.joinDate}
-                onChange={handleInputChange}
-                placeholder="Join Date"
-                style={{ ...inputStyle }}
-                onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
-                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
-              />
-              <input
-                type="text"
-                name="dob"
-                value={editedPatient.dob}
-                onChange={handleInputChange}
-                placeholder="Date of Birth"
-                style={{ ...inputStyle }}
-                onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
-                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
-              />
-              <input
-                type="text"
-                name="address"
-                value={editedPatient.address}
-                onChange={handleInputChange}
-                placeholder="Address"
-                style={{ ...inputStyle }}
-                onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
-                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
-              />
-              <input
-                type="text"
-                name="email"
-                value={editedPatient.email}
-                onChange={handleInputChange}
-                placeholder="Email"
-                style={{ ...inputStyle }}
-                onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
-                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
-              />
-              <input
-                type="text"
-                name="bloodGroup"
-                value={editedPatient.bloodGroup}
-                onChange={handleInputChange}
-                placeholder="Blood Group"
-                style={{ ...inputStyle }}
-                onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
-                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
-              />
+
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={editedPatient.firstName}
+                    onChange={handleInputChange}
+                    placeholder="First Name"
+                    style={{ ...inputStyle }}
+                    onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                    onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={editedPatient.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Last Name"
+                    style={{ ...inputStyle }}
+                    onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                    onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  name="phoneNumber"
+                  value={editedPatient.phoneNumber}
+                  onChange={handleInputChange}
+                  placeholder="Phone Number"
+                  style={{ ...inputStyle }}
+                  onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                  onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                />
+              </div>
+
+              <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={editedPatient.email}
+                  onChange={handleInputChange}
+                  placeholder="Email"
+                  style={{ ...inputStyle }}
+                  onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                  onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                />
+              </div>
+
+              <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                  Date of Birth
+                </label>
+                <input
+                  type="text"
+                  name="dob"
+                  value={editedPatient.dob}
+                  onChange={handleInputChange}
+                  placeholder="Date of Birth (YYYY-MM-DD)"
+                  style={{ ...inputStyle }}
+                  onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                  onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                />
+              </div>
+
+              <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                  Address
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={editedPatient.address}
+                  onChange={handleInputChange}
+                  placeholder="Address"
+                  style={{ ...inputStyle }}
+                  onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                  onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                    Blood Group
+                  </label>
+                  <input
+                    type="text"
+                    name="bloodGroup"
+                    value={editedPatient.bloodGroup}
+                    onChange={handleInputChange}
+                    placeholder="Blood Group"
+                    style={{ ...inputStyle }}
+                    onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                    onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                    Gender
+                  </label>
+                  <input
+                    type="text"
+                    name="gender"
+                    value={editedPatient.gender}
+                    onChange={handleInputChange}
+                    placeholder="Gender"
+                    style={{ ...inputStyle }}
+                    onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                    onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                    Age
+                  </label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={editedPatient.age}
+                    onChange={handleInputChange}
+                    placeholder="Age"
+                    style={{ ...inputStyle }}
+                    onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                    onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: '#555', textAlign: 'left' }}>
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={editedPatient.password}
+                    onChange={handleInputChange}
+                    placeholder="Password"
+                    style={{ ...inputStyle }}
+                    onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                    onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                  />
+                </div>
+              </div>
             </div>
             <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
               <button
@@ -316,7 +574,7 @@ const AdminPatient = () => {
                 Save
               </button>
               <button
-                onClick={() => setShowModifyModal(false)}
+                onClick={handleDeletePatient}
                 style={{
                   ...buttonStyle,
                   backgroundColor: '#dc3545',

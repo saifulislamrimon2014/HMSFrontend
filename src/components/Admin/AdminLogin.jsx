@@ -4,9 +4,8 @@ import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import "../doctor/DoctorLogin.css";
-import AdminDashboard from "./AdminDashboard";
 
-function AccountsLogin() {
+function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,23 +16,23 @@ function AccountsLogin() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/accounts-login/", {
+      const response = await axios.post("http://localhost:8000/api/admin-login/", {
         email,
         password,
       });
 
       if (response.data.success) {
         toast.success("Login successful!");
-        localStorage.setItem("accounts", JSON.stringify(response.data.accounts));
-        // setTimeout(() => navigate("/DoctorDashboard"), 500);
-        setTimeout(500);
-        window.location.href = "/DoctorDashboard"; // Redirect to DoctorDashboard
+        localStorage.setItem("admin", JSON.stringify(response.data.admin));
+        setTimeout(() => {
+          navigate("/AdminDashboard");
+        }, 500);
       } else {
         toast.error("Login failed. Please try again.");
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
+      toast.error("Login failed. Please check your credentials and try again.");
     } finally {
       setLoading(false);
     }
@@ -42,7 +41,7 @@ function AccountsLogin() {
   return (
     <div className="doctor-login-container">
       <div className="doctor-login-card">
-        
+
         <div className="back-button">
           <Link to="/" className="btn btn-outline-dark btn-sm">
             <FaArrowLeft /> Back
@@ -76,7 +75,7 @@ function AccountsLogin() {
             />
           </div>
 
-          <button type="submit" className="btn btn-success w-100 mt-3" disabled={loading} onClick={AdminDashboard}>
+          <button type="submit" className="btn btn-success w-100 mt-3" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
@@ -85,7 +84,7 @@ function AccountsLogin() {
   );
 }
 
-export default AccountsLogin;
+export default AdminLogin;
 // import React, { useState } from "react";
 // import axios from "axios";
 // import { toast } from "react-toastify";
@@ -129,7 +128,7 @@ export default AccountsLogin;
 //   return (
 //     <div className="doctor-login-container">
 //       <div className="doctor-login-card">
-        
+
 //         <div className="back-button">
 //           <Link to="/" className="btn btn-outline-dark btn-sm">
 //             <FaArrowLeft /> Back

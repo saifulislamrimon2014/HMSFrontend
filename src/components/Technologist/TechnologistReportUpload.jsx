@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import Header from './Header';
 import Footer from './Footer';
 
 const TechnologistReportUpload = () => {
   // State for report data
   const [report, setReport] = useState({
-    reportNo: '##',
-    dateOfIssue: '',
+    reportNo: 'Auto-generated',
+    dateOfIssue: new Date().toISOString().split('T')[0],
     sampleCollection: '12-06-2024 03:43 PM',
     reportedBy: '',
     patientName: 'Karim Hawlader',
     patientId: '2024061101',
+    doctorId: '',
+    doctorName: '',
     weight: '78 kg',
     bloodPressure: 'XX/XX mmHg',
     sugarLevel: 'XXX',
@@ -31,10 +35,51 @@ const TechnologistReportUpload = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState({});
 
+  // State for doctors list and loading
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  // Fetch doctors list on component mount
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8000/api/doctors/');
+        setDoctors(response.data);
+      } catch (error) {
+        console.error('Error fetching doctors:', error);
+        toast.error('Failed to load doctors list');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setReport((prev) => ({ ...prev, [name]: value }));
+
+    // If doctor is selected, update doctorName
+    if (name === 'doctorId') {
+      const selectedDoctor = doctors.find(doctor => doctor.id === value);
+      if (selectedDoctor) {
+        setReport(prev => ({
+          ...prev,
+          doctorId: selectedDoctor.docID,
+          doctorName: selectedDoctor.docName
+        }));
+      }
+    }
   };
 
   // Handle Edit button click
@@ -56,9 +101,74 @@ const TechnologistReportUpload = () => {
     setEditData({});
   };
 
-  // Handle Upload (mocked for now)
-  const handleUpload = () => {
-    alert('Report uploaded successfully!');
+  // Handle Upload
+  const handleUpload = async () => {
+    try {
+      // Validate required fields
+      if (!report.reportedBy) {
+        toast.error('Please enter the reporter name');
+        return;
+      }
+
+      if (!report.patientName) {
+        toast.error('Please enter the patient name');
+        return;
+      }
+
+      if (!report.patientId) {
+        toast.error('Please enter the patient ID');
+        return;
+      }
+
+      if (!report.doctorId || !report.doctorName) {
+        toast.error('Please select a doctor');
+        return;
+      }
+
+      setSubmitting(true);
+
+      // Prepare data for API
+      const reportData = {
+        reportedBy: report.reportedBy,
+        patientName: report.patientName,
+        patientId: report.patientId,
+        doctorId: report.doctorId,
+        doctorName: report.doctorName,
+        dateOfIssue: report.dateOfIssue || new Date().toISOString().split('T')[0],
+        sampleCollection: report.sampleCollection,
+        weight: report.weight,
+        bloodPressure: report.bloodPressure,
+        sugarLevel: report.sugarLevel,
+        heartRate: report.heartRate,
+        totalCholesterol: report.totalCholesterol,
+        hdl: report.hdl,
+        ldl: report.ldl,
+        tg: report.tg,
+        hdlRatio: report.hdlRatio,
+        ecg: report.ecg,
+        xRay: report.xRay,
+        ent: report.ent,
+        tb: report.tb,
+        summary: report.summary
+      };
+
+      // Send data to API
+      const response = await axios.post('http://localhost:8000/api/reports/add/', reportData);
+
+      // Update report number with auto-generated value
+      setReport(prev => ({
+        ...prev,
+        reportNo: response.data.reportNo
+      }));
+
+      // Show success message
+      toast.success('Report uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading report:', error);
+      toast.error('Failed to upload report. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Modern input style with hover effect
@@ -174,6 +284,36 @@ const TechnologistReportUpload = () => {
                 onBlur={(e) => Object.assign(e.target.style, inputStyle)}
               />
             </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span style={{ fontWeight: '600', color: '#333' }}>DOCTOR: </span>
+              {loading ? (
+                <div style={{ width: '180px', textAlign: 'center', padding: '8px' }}>Loading...</div>
+              ) : (
+                <select
+                  name="doctorId"
+                  value={report.doctorId}
+                  onChange={handleInputChange}
+                  style={{ ...inputStyle, width: '250px' }}
+                  onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                  onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                >
+                  <option value="">Select Doctor</option>
+                  {doctors.map((doctor) => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.docName} ({doctor.docID})
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+            {report.doctorName && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ fontWeight: '600', color: '#333' }}>SELECTED: </span>
+                <span style={{ color: '#666' }}>{report.doctorName}</span>
+              </div>
+            )}
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -371,20 +511,48 @@ const TechnologistReportUpload = () => {
               Edit Report
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <button
-                onClick={handleUpload}
-                style={{
-                  ...buttonStyle,
-                  backgroundColor: '#28a745',
-                  color: '#fff'
-                }}
-                onMouseEnter={(e) => (e.target.style.backgroundColor = '#218838')}
-                onMouseLeave={(e) => (e.target.style.backgroundColor = '#28a745')}
-                onMouseDown={(e) => (e.target.style.transform = 'scale(0.95)')}
-                onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}
-              >
-                Upload
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <label
+                    htmlFor="pdfUpload"
+                    style={{
+                      ...buttonStyle,
+                      backgroundColor: '#6c757d',
+                      color: '#fff',
+                      display: 'inline-block',
+                      cursor: 'pointer',
+                      textAlign: 'center'
+                    }}
+                    onMouseEnter={(e) => (e.target.style.backgroundColor = '#5a6268')}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = '#6c757d')}
+                  >
+                    Select PDF
+                  </label>
+                  <input
+                    id="pdfUpload"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+                <button
+                  onClick={handleUpload}
+                  disabled={submitting}
+                  style={{
+                    ...buttonStyle,
+                    backgroundColor: submitting ? '#6c757d' : '#28a745',
+                    color: '#fff',
+                    position: 'relative'
+                  }}
+                  onMouseEnter={(e) => !submitting && (e.target.style.backgroundColor = '#218838')}
+                  onMouseLeave={(e) => !submitting && (e.target.style.backgroundColor = '#28a745')}
+                  onMouseDown={(e) => !submitting && (e.target.style.transform = 'scale(0.95)')}
+                  onMouseUp={(e) => !submitting && (e.target.style.transform = 'scale(1)')}
+                >
+                  {submitting ? 'Uploading...' : 'Upload Report'}
+                </button>
+              </div>
               <input
                 type="text"
                 placeholder="Signature"
@@ -492,6 +660,39 @@ const TechnologistReportUpload = () => {
                   onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
                   onBlur={(e) => Object.assign(e.target.style, inputStyle)}
                 />
+              </div>
+              <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', color: '#555', fontSize: '14px', marginBottom: '5px' }}>Doctor:</label>
+                {loading ? (
+                  <div style={{ padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>Loading doctors...</div>
+                ) : (
+                  <select
+                    name="doctorId"
+                    value={editData.doctorId || ''}
+                    onChange={(e) => {
+                      handleEditInputChange(e);
+                      // Update doctorName when doctorId changes
+                      const selectedDoctor = doctors.find(doctor => doctor.id === e.target.value);
+                      if (selectedDoctor) {
+                        setEditData(prev => ({
+                          ...prev,
+                          doctorId: selectedDoctor.docID,
+                          doctorName: selectedDoctor.docName
+                        }));
+                      }
+                    }}
+                    style={{ ...inputStyle }}
+                    onFocus={(e) => Object.assign(e.target.style, inputHoverFocusStyle)}
+                    onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                  >
+                    <option value="">Select Doctor</option>
+                    {doctors.map((doctor) => (
+                      <option key={doctor.id} value={doctor.id}>
+                        {doctor.docName} ({doctor.docID})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
 

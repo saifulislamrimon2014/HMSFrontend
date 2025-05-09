@@ -1,8 +1,13 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../AuthContext';
+import { toast } from 'react-toastify';
 import './Header.css';
 
 const Header = () => {
+  const { adminLogout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   // Style for navigation links
   const getNavLinkStyle = ({ isActive }) => ({
     color: isActive ? '#28a745' : '#000',
@@ -14,6 +19,14 @@ const Header = () => {
     fontWeight: isActive ? '600' : 'normal',
     transition: 'color 0.3s ease'
   });
+
+  // Handle logout
+  const handleLogout = (e) => {
+    e.preventDefault();
+    adminLogout();
+    toast.success("Logged out successfully!");
+    navigate('/adminlogin');
+  };
 
   return (
     <header style={{
@@ -46,7 +59,7 @@ const Header = () => {
       {/* Right side - Navigation links */}
       <nav style={{ display: 'flex', alignItems: 'center' }}>
         <NavLink
-          to="/AdminDashboard"  
+          to="/AdminDashboard"
           style={getNavLinkStyle}
           className="nav-link"
         >
@@ -90,24 +103,25 @@ const Header = () => {
         >
           Inventory
         </NavLink>
-         <NavLink
-          to="/AdminEditProfile"
-          style={getNavLinkStyle}
-          className="nav-link"
-        >
-          Edit Profile
-        </NavLink>
 
-        <NavLink
-          to="/logout"
-          style={({ isActive }) => ({
-            ...getNavLinkStyle({ isActive }),
-            marginRight: '0'
-          })}
+        <a
+          href="#"
+          onClick={handleLogout}
+          style={{
+            color: '#000',
+            textDecoration: 'none',
+            margin: '0 15px',
+            marginRight: '0',
+            position: 'relative',
+            paddingBottom: '15px',
+            paddingTop: '10px',
+            fontWeight: 'normal',
+            transition: 'color 0.3s ease'
+          }}
           className="nav-link"
         >
           Log Out
-        </NavLink>
+        </a>
       </nav>
     </header>
   );

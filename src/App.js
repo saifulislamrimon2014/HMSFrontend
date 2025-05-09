@@ -12,6 +12,7 @@ import SignUp from "./components/patient/register";
 import Profile from "./components/patient/profile";
 import PatientDashboard from "./components/patient/PatientDashboard";
 import PatientAppointment from "./components/patient/PatientAppointment";
+import PatientAppointmentList from "./components/patient/PatientAppointmentList";
 import AppointmentSchedule from "./components/patient/AppointmentSchedule";
 import MakeAppointment from "./components/patient/MakeAppointment";
 import PatientMedicalPage from "./components/patient/PatientMedicalPage";
@@ -49,7 +50,6 @@ import AdminPatient from "./components/Admin/AdminPatient";
 import AdminDoctor from "./components/Admin/AdminDoctor";
 import AdminTechnologist from "./components/Admin/AdminTechnologist";
 import AdminAccountant from "./components/Admin/AdminAccountant";
-import AdminEditProfile from "./components/Admin/AdminEditProfile";
 import AdminInventory from "./components/Admin/AdminInventory";
 import AccountsLogin from "./components/Accounts/AccountsLogin";
 import TechnologistLogin from "./components/Technologist/TechnologistLogin";
@@ -61,7 +61,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function AppRoutes() {
-  const { user, doctor, loading } = useContext(AuthContext);
+  const { user, doctor, admin, loading } = useContext(AuthContext);
 
   if (loading) {
     return (
@@ -74,6 +74,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={
+        admin ? <Navigate to="/admindashboard" replace /> :
         doctor ? <Navigate to="/DoctorDashboard" replace /> :
         user ? <Navigate to="/PatientDashboard" replace /> :
         <Home />
@@ -84,7 +85,8 @@ function AppRoutes() {
       <Route path="/register" element={user ? <Navigate to="/PatientDashboard" /> : <SignUp />} />
       <Route path="/profile" element={user ? <Profile /> : <Navigate to="/PatientLogin" />} />
       <Route path="/PatientDashboard" element={user ? <PatientDashboard /> : <Navigate to="/PatientLogin" />} />
-      <Route path="/PatientAppointments" element={user ? <PatientAppointment /> : <Navigate to="/PatientLogin" />} />
+      <Route path="/PatientAppointment" element={user ? <PatientAppointment /> : <Navigate to="/PatientLogin" />} />
+      <Route path="/PatientAppointments" element={user ? <PatientAppointmentList /> : <Navigate to="/PatientLogin" />} />
       <Route path="/AppointmentSchedule" element={user ? <AppointmentSchedule /> : <Navigate to="/PatientLogin" />} />
       <Route path="/MakeAppointment" element={user ? <MakeAppointment /> : <Navigate to="/PatientLogin" />} />
       <Route path="/PatientMedicalPage" element={user ? <PatientMedicalPage /> : <Navigate to="/PatientLogin" />} />
@@ -102,25 +104,29 @@ function AppRoutes() {
       <Route path="/DoctorRegisteredPatient" element={doctor ? <DoctorRegisteredPatient /> : <Navigate to="/DoctorLogin" />} />
 
 
+      {/* Accounts */}
+      <Route path="/accountslogin" element={<AccountsLogin />} />
       <Route path="/accounts" element={<AccountsDashboard />} />
-           <Route path="/accountsinventory" element={<AccountsInventory />} />
-           <Route path="/addpayment" element={<AddPayment />} />
-           <Route path="/accountseditprofile" element={<AccountsEditProfile />} />
-           <Route path="/technologistdashboard" element={<TechnologistDashboard />} />
-           <Route path="/technologistReportUpload" element={<TechnologistReportUpload />} />
-           <Route path="/technologistreportdelivery" element={<TechnologistReportDelivery />} />
-           <Route path="/technologistupdatereport" element={<TechnologistUpdateReport />} />
-           <Route path="/technologisteditprofile" element={<TechnologistEditProfile />} />
-           <Route path="/admindashboard" element={<AdminDashboard />} />
-           <Route path="/adminpatient" element={<AdminPatient />} />
-            <Route path="/adminDoctor" element={<AdminDoctor />} />
-            <Route path="/admintechnologist" element={<AdminTechnologist />} />
-            <Route path="/adminaccountants" element={<AdminAccountant />} />
-            <Route path="/admineditprofile" element={<AdminEditProfile />} />
-            <Route path="/admininventory" element={<AdminInventory />} />
-            <Route path="/accountslogin" element={<AccountsLogin />} />
-            <Route path="/technologistlogin" element={<TechnologistLogin />} />
-            <Route path="/adminlogin" element={<AdminLogin />} />
+      <Route path="/accountsinventory" element={<AccountsInventory />} />
+      <Route path="/addpayment" element={<AddPayment />} />
+      <Route path="/accountseditprofile" element={<AccountsEditProfile />} />
+
+      {/* Technologist */}
+      <Route path="/technologistlogin" element={<TechnologistLogin />} />
+      <Route path="/technologistdashboard" element={<TechnologistDashboard />} />
+      <Route path="/technologistReportUpload" element={<TechnologistReportUpload />} />
+      <Route path="/technologistreportdelivery" element={<TechnologistReportDelivery />} />
+      <Route path="/technologistupdatereport" element={<TechnologistUpdateReport />} />
+      <Route path="/technologisteditprofile" element={<TechnologistEditProfile />} />
+
+      {/* Admin */}
+      <Route path="/adminlogin" element={admin ? <Navigate to="/admindashboard" /> : <AdminLogin />} />
+      <Route path="/admindashboard" element={admin ? <AdminDashboard /> : <Navigate to="/adminlogin" />} />
+      <Route path="/adminpatient" element={admin ? <AdminPatient /> : <Navigate to="/adminlogin" />} />
+      <Route path="/adminDoctor" element={admin ? <AdminDoctor /> : <Navigate to="/adminlogin" />} />
+      <Route path="/admintechnologist" element={admin ? <AdminTechnologist /> : <Navigate to="/adminlogin" />} />
+      <Route path="/adminaccountants" element={admin ? <AdminAccountant /> : <Navigate to="/adminlogin" />} />
+      <Route path="/admininventory" element={admin ? <AdminInventory /> : <Navigate to="/adminlogin" />} />
 
     </Routes>
   );

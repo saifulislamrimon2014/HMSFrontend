@@ -1,0 +1,166 @@
+.PatientAppointmentList {
+  background-color: #f3fff9;
+  min-height: 100vh;
+}
+
+.appointments-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.appointments-heading {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+.new-appointment-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.btn-new-appointment {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.btn-new-appointment:hover {
+  background-color: #45a049;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.appointments-table th,
+.appointments-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.appointments-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  color: #333;
+}
+
+.appointments-table tr:last-child td {
+  border-bottom: none;
+}
+
+.appointments-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status.paid {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.unpaid {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status.followup {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+.status.booked {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status.report {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.btn-pay {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-pay:hover {
+  background-color: #0069d9;
+}
+
+.btn-view-details {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-view-details:hover {
+  background-color: #5a6268;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+}
+
+.no-appointments {
+  text-align: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.no-appointments p {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.btn-schedule {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.btn-schedule:hover {
+  background-color: #45a049;
+}

@@ -31,10 +31,10 @@ const PatientHeader = () => {
         navigate("/PatientLogin");
       }
     });
-  
+
     return () => unsubscribe();
   }, [navigate]);
-  
+
 
   const handleLogout = async () => {
     try {
@@ -64,7 +64,7 @@ const PatientHeader = () => {
             </li>
 
             <li className={
-                location.pathname === "/PrescriptionReport" || location.pathname === "/PrescriptionReport" 
+                location.pathname === "/PrescriptionReport" || location.pathname === "/PrescriptionReport"
                     ? "active-nav"
                     : ""
                 }>
@@ -72,22 +72,22 @@ const PatientHeader = () => {
             </li>
 
             <li className={
-                location.pathname === "/PatientAppointment" || location.pathname === "/PatientAppointment" || location.pathname === "/AppointmentSchedule"
+                location.pathname === "/PatientAppointments" || location.pathname === "/PatientAppointment" || location.pathname === "/AppointmentSchedule"
                     ? "active-nav"
                     : ""
                 }>
-                <Link to="/PatientAppointment">Appointment</Link>
+                <Link to="/PatientAppointments">My Appointments</Link>
             </li>
 
             <li className={
-                location.pathname === "/PatientPayment" || location.pathname === "/PatientPayment" 
+                location.pathname === "/PatientPayment" || location.pathname === "/PatientPayment"
                     ? "active-nav"
                     : ""
                 }>
                 <Link to="/PatientPayment">Payment</Link>
             </li>
 
-            
+
             <p>|</p>
             <li className={location.pathname === "/DoctorProfile" ? "active-nav" : ""}>
               <Link to="/profile">Edit Profile</Link>

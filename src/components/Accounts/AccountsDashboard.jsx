@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const AccountsDashboard = () => {
+  const [accountant, setAccountant] = useState(null);
+  const navigate = useNavigate();
+
+  // Check if user is logged in
+  useEffect(() => {
+    const storedAccountant = localStorage.getItem('accountant');
+    if (!storedAccountant) {
+      toast.error('Please login first');
+      navigate('/AccountsLogin');
+    } else {
+      setAccountant(JSON.parse(storedAccountant));
+    }
+  }, [navigate]);
+
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Header />
@@ -15,10 +31,10 @@ const AccountsDashboard = () => {
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
       }}>
         <h1 style={{ color: '#28a745', fontSize: '24px', marginBottom: '10px' }}>
-          Welcome to your panel, MD!
+          Welcome to your panel, {accountant?.name || 'Accountant'}!
         </h1>
         <p style={{ color: '#666', marginBottom: '30px' }}>
-          You can now manage your payments, inventory, and other services.
+          You can now manage payments, inventory, and other financial services.
         </p>
 
         <div style={{

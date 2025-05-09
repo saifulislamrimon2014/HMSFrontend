@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import Header from './Header';
 import Footer from './Footer';
 
 const TechnologistUpdateReport = () => {
   // State for report data
-  const [reports, setReports] = useState([
-    { id: 1, reportNo: '002', name: 'Cooper', phone: '+91-987654320', deliveryDateTime: '10-Aug-2024 10:00 AM', payment: 'Completed' },
-    { id: 2, reportNo: '003', name: 'Warren', phone: '+91-987654321', deliveryDateTime: '10-Aug-2024 11:00 AM', payment: 'Pending' },
-    { id: 3, reportNo: '004', name: 'Cooper', phone: '+91-987654322', deliveryDateTime: '10-Aug-2024 12:00 PM', payment: 'Completed' },
-    { id: 4, reportNo: '005', name: 'Warren', phone: '+91-987654323', deliveryDateTime: '10-Aug-2024 01:00 PM', payment: 'Pending' },
-    { id: 5, reportNo: '006', name: 'Cooper', phone: '+91-987654324', deliveryDateTime: '10-Aug-2024 02:00 PM', payment: 'Completed' },
-  ]);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // State for search
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,42 +19,70 @@ const TechnologistUpdateReport = () => {
   const [selectedReport, setSelectedReport] = useState(null);
   const [editData, setEditData] = useState({});
 
+  // Fetch reports from API
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8000/api/reports/');
+        setReports(response.data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching reports:', err);
+        setError('Failed to load reports. Please try again.');
+        toast.error('Failed to load reports. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
   // Filter reports based on search term
-  const filteredReports = reports.filter(report =>
-    report.reportNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.deliveryDateTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.payment.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredReports = reports.filter(report => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      (report.reportNo && report.reportNo.toString().toLowerCase().includes(searchTermLower)) ||
+      (report.patientName && report.patientName.toLowerCase().includes(searchTermLower)) ||
+      (report.patientId && report.patientId.toLowerCase().includes(searchTermLower)) ||
+      (report.doctorName && report.doctorName.toLowerCase().includes(searchTermLower)) ||
+      (report.dateOfIssue && report.dateOfIssue.toLowerCase().includes(searchTermLower))
+    );
+  });
 
   // Handle Details button click
   const handleDetailsClick = (report) => {
     setSelectedReport(report);
     setEditData({
+      id: report.id,
       reportNo: report.reportNo,
-      reportedBy: 'Karim Hawlader',
-      patientName: report.name,
-      patientId: `202405${report.id}01`,
-      weight: '78 kg',
-      bloodPressure: '120/80 mmHg',
-      sugarLevel: '100',
-      heartRate: '70 bpm',
-      totalCholesterol: '255',
-      hdl: '60',
-      ldl: '168',
-      tg: '284',
-      hdlRatio: '4.28',
-      ecg: 'Normal',
-      xRay: 'Normal',
-      ent: 'NAD',
-      tb: 'Normal',
-      summary: '',
+      dateOfIssue: report.dateOfIssue || '',
+      sampleCollection: report.sampleCollection || '',
+      reportedBy: report.reportedBy || '',
+      patientName: report.patientName || '',
+      patientId: report.patientId || '',
+      doctorId: report.doctorId || '',
+      doctorName: report.doctorName || '',
+      weight: report.weight || '',
+      bloodPressure: report.bloodPressure || '',
+      sugarLevel: report.sugarLevel || '',
+      heartRate: report.heartRate || '',
+      totalCholesterol: report.totalCholesterol || '',
+      hdl: report.hdl || '',
+      ldl: report.ldl || '',
+      tg: report.tg || '',
+      hdlRatio: report.hdlRatio || '',
+      ecg: report.ecg || '',
+      xRay: report.xRay || '',
+      ent: report.ent || '',
+      tb: report.tb || '',
+      summary: report.summary || '',
     });
     setShowDetailsModal(true);
   };
@@ -67,15 +94,72 @@ const TechnologistUpdateReport = () => {
   };
 
   // Handle form submission to update the data
-  const handleUpdateSubmit = () => {
+  const handleUpdateSubmit = async () => {
     if (selectedReport) {
-      const updatedReports = reports.map((report) =>
-        report.id === selectedReport.id ? { ...report, name: editData.patientName, reportNo: editData.reportNo, phone: editData.phone, deliveryDateTime: editData.deliveryDateTime, payment: editData.payment, ...editData } : report
-      );
-      setReports(updatedReports);
-      setShowDetailsModal(false);
-      setSelectedReport(null);
-      setEditData({});
+      try {
+        setSubmitting(true);
+
+        // Validate required fields
+        if (!editData.reportedBy) {
+          toast.error('Please enter the reporter name');
+          return;
+        }
+
+        if (!editData.patientName) {
+          toast.error('Please enter the patient name');
+          return;
+        }
+
+        if (!editData.patientId) {
+          toast.error('Please enter the patient ID');
+          return;
+        }
+
+        // Prepare data for API
+        const reportData = {
+          reportedBy: editData.reportedBy,
+          patientName: editData.patientName,
+          patientId: editData.patientId,
+          doctorId: editData.doctorId,
+          doctorName: editData.doctorName,
+          dateOfIssue: editData.dateOfIssue,
+          sampleCollection: editData.sampleCollection,
+          weight: editData.weight,
+          bloodPressure: editData.bloodPressure,
+          sugarLevel: editData.sugarLevel,
+          heartRate: editData.heartRate,
+          totalCholesterol: editData.totalCholesterol,
+          hdl: editData.hdl,
+          ldl: editData.ldl,
+          tg: editData.tg,
+          hdlRatio: editData.hdlRatio,
+          ecg: editData.ecg,
+          xRay: editData.xRay,
+          ent: editData.ent,
+          tb: editData.tb,
+          summary: editData.summary
+        };
+
+        // Send data to API
+        await axios.put(`http://localhost:8000/api/reports/update/${selectedReport.id}/`, reportData);
+
+        // Refresh the reports list
+        const response = await axios.get('http://localhost:8000/api/reports/');
+        setReports(response.data);
+
+        // Show success message
+        toast.success('Report updated successfully!');
+
+        // Close modal and reset state
+        setShowDetailsModal(false);
+        setSelectedReport(null);
+        setEditData({});
+      } catch (error) {
+        console.error('Error updating report:', error);
+        toast.error('Failed to update report. Please try again.');
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
@@ -122,7 +206,7 @@ const TechnologistUpdateReport = () => {
               <div style={{ marginBottom: '20px', textAlign: 'right' }}>
                   <input
                       type="text"
-                      placeholder="Search here..."
+                      placeholder="Search by Report No, Patient Name, Doctor..."
                       value={searchTerm}
                       onChange={handleSearchChange}
                       style={{ ...inputStyle, paddingLeft: '35px', background: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23666" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat 10px center` }}
@@ -130,14 +214,39 @@ const TechnologistUpdateReport = () => {
                       onBlur={(e) => Object.assign(e.target.style, inputStyle)} />
               </div>
               <div style={{ overflowX: 'auto' }}>
+                {loading ? (
+                  <div style={{ textAlign: 'center', padding: '30px' }}>
+                    <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #28a745', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                    <p style={{ marginTop: '15px', color: '#666' }}>Loading reports...</p>
+                  </div>
+                ) : error ? (
+                  <div style={{ textAlign: 'center', padding: '30px', color: '#dc3545' }}>
+                    <p>{error}</p>
+                    <button
+                      onClick={() => window.location.reload()}
+                      style={{
+                        ...buttonStyle,
+                        backgroundColor: '#28a745',
+                        color: '#fff',
+                        marginTop: '10px'
+                      }}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : filteredReports.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '30px', color: '#666' }}>
+                    <p>No reports found matching your search criteria.</p>
+                  </div>
+                ) : (
                   <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 10px', backgroundColor: '#fff' }}>
                       <thead>
                           <tr style={{ backgroundColor: '#28a745', color: '#fff' }}>
                               <th style={{ padding: '12px', textAlign: 'left' }}>Report No</th>
-                              <th style={{ padding: '12px', textAlign: 'left' }}>Name</th>
-                              <th style={{ padding: '12px', textAlign: 'left' }}>Phone Number</th>
-                              <th style={{ padding: '12px', textAlign: 'left' }}>Delivery Date & Time</th>
-                              <th style={{ padding: '12px', textAlign: 'left' }}>Payment</th>
+                              <th style={{ padding: '12px', textAlign: 'left' }}>Patient Name</th>
+                              <th style={{ padding: '12px', textAlign: 'left' }}>Patient ID</th>
+                              <th style={{ padding: '12px', textAlign: 'left' }}>Doctor</th>
+                              <th style={{ padding: '12px', textAlign: 'left' }}>Date of Issue</th>
                               <th style={{ padding: '12px', textAlign: 'left' }}>Action</th>
                           </tr>
                       </thead>
@@ -145,10 +254,10 @@ const TechnologistUpdateReport = () => {
                           {filteredReports.map((report) => (
                               <tr key={report.id} style={{ boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
                                   <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.reportNo}</td>
-                                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.name}</td>
-                                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.phone}</td>
-                                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.deliveryDateTime}</td>
-                                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.payment}</td>
+                                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.patientName}</td>
+                                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.patientId}</td>
+                                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.doctorName}</td>
+                                  <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{report.dateOfIssue}</td>
                                   <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
                                       <button
                                           onClick={() => handleDetailsClick(report)}
@@ -170,6 +279,7 @@ const TechnologistUpdateReport = () => {
                           ))}
                       </tbody>
                   </table>
+                )}
               </div>
           </div>
 
@@ -440,18 +550,19 @@ const TechnologistUpdateReport = () => {
                               onBlur={(e) => Object.assign(e.target.style, inputStyle)} />
                           <button
                               onClick={handleUpdateSubmit}
+                              disabled={submitting}
                               style={{
                                   ...buttonStyle,
-                                  backgroundColor: '#28a745',
+                                  backgroundColor: submitting ? '#6c757d' : '#28a745',
                                   color: '#fff',
                                   padding: '10px 20px'
                               }}
-                              onMouseEnter={(e) => (e.target.style.backgroundColor = '#218838')}
-                              onMouseLeave={(e) => (e.target.style.backgroundColor = '#28a745')}
-                              onMouseDown={(e) => (e.target.style.transform = 'scale(0.95)')}
-                              onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}
+                              onMouseEnter={(e) => !submitting && (e.target.style.backgroundColor = '#218838')}
+                              onMouseLeave={(e) => !submitting && (e.target.style.backgroundColor = '#28a745')}
+                              onMouseDown={(e) => !submitting && (e.target.style.transform = 'scale(0.95)')}
+                              onMouseUp={(e) => !submitting && (e.target.style.transform = 'scale(1)')}
                           >
-                              Update
+                              {submitting ? 'Updating...' : 'Update'}
                           </button>
                           <button
                               onClick={() => setShowDetailsModal(false)}
