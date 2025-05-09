@@ -1,0 +1,260 @@
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+  background-color: #f8f9fa;
+}
+
+.dashboard-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+  padding: 30px 20px;
+  width: 260px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+}
+
+.dashboard-card h5 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.dashboard-card h2 {
+  font-size: 40px;
+  font-weight: 700;
+  color: #28a745;
+  margin-top: 10px;
+}
+
+.circle-progress {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: #e0f5e9;
+  color: #28a745;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+.welcome-section {
+  background-color: #ffffff;
+  text-align: center;
+  padding: 40px 20px;
+  margin: 30px auto;
+  border-radius: 12px;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.welcome-section h3 {
+  font-size: 24px;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+.welcome-section p {
+  font-size: 16px;
+  color: #444;
+}
+
+/* Footer styles */
+
+.doctor-footer {
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  padding: 4px 0;
+  text-align: center;
+  font-size: 12px;
+  color: #555;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.footer-content p {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.DoctorDashboard {
+  padding-bottom: 40px; /* or enough to match your footer height */
+}
+.main-nav ul {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding-left: 0;
+  gap: 20px;
+}
+
+.main-nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.main-nav ul li a:hover {
+  color: #28a745;
+}
+
+/* Highlight current page */
+.active-nav a {
+  color: #28a745 !important;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Remove default bullet */
+li {
+  list-style: none;
+}
+
+
+/* Rimon */
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+  background-color: #f8f9fa;
+}
+
+.dashboard-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+  padding: 30px 20px;
+  width: 260px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+}
+
+.dashboard-card h5 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.dashboard-card h2 {
+  font-size: 40px;
+  font-weight: 700;
+  color: #28a745;
+  margin-top: 10px;
+}
+
+.circle-progress {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: #e0f5e9;
+  color: #28a745;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+.welcome-section {
+  background-color: #ffffff;
+  text-align: center;
+  padding: 40px 20px;
+  margin: 30px auto;
+  border-radius: 12px;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.welcome-section h3 {
+  font-size: 24px;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+.welcome-section p {
+  font-size: 16px;
+  color: #444;
+}
+
+/* Footer styles */
+
+.doctor-footer {
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  padding: 4px 0;
+  text-align: center;
+  font-size: 12px;
+  color: #555;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.footer-content p {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.DoctorDashboard {
+  padding-bottom: 40px; /* or enough to match your footer height */
+}
+.main-nav ul {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding-left: 0;
+  gap: 20px;
+}
+
+.main-nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.main-nav ul li a:hover {
+  color: #28a745;
+}
+
+/* Highlight current page */
+.active-nav a {
+  color: #28a745 !important;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Remove default bullet */
+li {
+  list-style: none;
+}
+
+
+/* Rimon */

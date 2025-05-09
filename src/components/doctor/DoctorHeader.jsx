@@ -1,52 +1,23 @@
-import '../Homepage.css';
-import './Doctor.css';
-import React, { useEffect, useState } from "react";
-import { auth, db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../../AuthContext";
+import "../Homepage.css";
+import "./Doctor.css";
 
 const DoctorHeader = () => {
+  const { doctor, setDoctor } = useContext(AuthContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [userDetails, setUserDetails] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        try {
-          const docRef = doc(db, "Users", currentUser.uid);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setUserDetails(docSnap.data());
-          } else {
-            toast.error("No user data found", { position: "top-center" });
-          }
-        } catch (error) {
-          toast.error("Error fetching user data", { position: "top-center" });
-          console.error("Error:", error);
-        }
-      } else {
-        setUserDetails(null);
-        navigate("/login");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast.success("Logged out successfully", { position: "top-center" });
-      navigate("/DoctorLogin");
-    } catch (error) {
-      toast.error(error.message, { position: "top-center" });
-      console.error("Logout error:", error);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("doctor");
+    setDoctor(null);
+    toast.success("Logged out successfully!");
+    // navigate("/DoctorLogin");
+    setTimeout(500);
+    window.location.href = "/DoctorLogin"; // Redirect to DoctorLogin
   };
 
   return (
@@ -55,27 +26,20 @@ const DoctorHeader = () => {
         <div className="contact-info">
           <span>Emergency: +8801825674348</span>
         </div>
-
-        <nav className={`main-nav ${isMenuOpen ? 'active' : ''}`}>
+        <nav className={`main-nav ${isMenuOpen ? "active" : ""}`}>
           <div className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? '✕' : '☰'}
+            {isMenuOpen ? "✕" : "☰"}
           </div>
           <ul>
             <li className={location.pathname === "/DoctorDashboard" ? "active-nav" : ""}>
               <Link to="/DoctorDashboard">Doctor's Dashboard</Link>
             </li>
             <li className={location.pathname === "/DoctorAppointmentList" ? "active-nav" : ""}>
-                <Link to="/DoctorAppointmentList">Appointments</Link>
+              <Link to="/DoctorAppointmentList">Appointments</Link>
             </li>
-
-            <li className={
-                location.pathname === "/DoctorRegisteredPatient" || location.pathname === "/DoctorPatientDetails" || location.pathname === "/DoctorIssuePrescription"
-                    ? "active-nav"
-                    : ""
-                }>
-                <Link to="/DoctorRegisteredPatient">Registered Patient</Link>
+            <li className={["/DoctorRegisteredPatient", "/DoctorPatientDetails", "/DoctorIssuePrescription"].includes(location.pathname) ? "active-nav" : ""}>
+              <Link to="/DoctorRegisteredPatient">Registered Patient</Link>
             </li>
-
             <li>Online Consultations</li>
             <li>Referrals</li>
             <p>|</p>
@@ -83,7 +47,7 @@ const DoctorHeader = () => {
               <Link to="/DoctorProfile">Edit Profile</Link>
             </li>
             <li onClick={handleLogout}>Signout</li>
-            <li>{userDetails?.firstName ?  <Link to="/DoctorProfile">Dr. {userDetails.firstName}</Link> : "Loading..."}</li>
+            <li>{doctor?.DocName ? <Link to="/DoctorProfile">{doctor.DocName}</Link> : "Loading..."}</li>
           </ul>
         </nav>
       </header>

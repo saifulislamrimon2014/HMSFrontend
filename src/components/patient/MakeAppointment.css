@@ -1,0 +1,116 @@
+.make-appointment-container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .make-appointment-container h3 {
+    text-align: center;
+    color: #28a745;
+    margin-bottom: 20px;
+  }
+  
+  .make-appointment-container label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 500;
+    color: #374151;
+  }
+  
+  .make-appointment-container input[type="text"],
+  .make-appointment-container input[type="number"],
+  .make-appointment-container select,
+  .make-appointment-container textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  .make-appointment-container input[type="radio"] {
+    margin-right: 8px;
+  }
+  
+  .appointment-form {
+    margin-top: 20px;
+  }
+  
+  .btn-payment {
+    margin-top: 25px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s ease;
+  }
+  
+  .btn-payment:hover {
+    background-color: #218838;
+  }
+  
+
+
+  .confirmation-box {
+    background: #f8f9fa;
+    padding: 25px;
+    margin-top: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .confirmation-box h4 {
+    margin-top: 15px;
+    color: #28a745;
+  }
+  
+  .confirmation-box p {
+    margin: 6px 0;
+  }
+  
+  .btn-print {
+    margin-top: 20px;
+    background-color: #1c7ed6;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  @media print {
+    #navbar,
+    #footer {
+      display: none !important;
+    }
+  
+    .btn-print {
+      display: none !important;
+    }
+  
+    body * {
+      visibility: hidden;
+    }
+  
+    .print-area,
+    .print-area * {
+      visibility: visible;
+    }
+  
+    .print-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  }
+  
+  

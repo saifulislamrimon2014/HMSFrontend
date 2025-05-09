@@ -1,0 +1,63 @@
+
+.PatientMedicalPage {
+  background-color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.content-wrapper {
+  padding: 40px 60px;
+}
+
+.section-title {
+  color: #228B22;
+  font-weight: 600;
+  margin: 30px 0 15px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 40px;
+}
+
+.history-table th,
+.history-table td {
+  padding: 12px 18px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.history-table th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+.history-table button {
+  background-color:#28a745;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 3px;
+}
+
+.history-table button:hover {
+  background-color: #0cc6c6;
+}
+
+.history-table {
+    width: 100%;
+    table-layout: fixed; /* ensures equal column widths */
+    border-collapse: collapse;
+    margin-bottom: 40px;
+  }
+  
+  .history-table th,
+  .history-table td {
+    padding: 12px 18px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+    width: 25%; /* or 20% if you have 5 columns, etc. */
+  }
+  

@@ -1,0 +1,77 @@
+.AppointmentSchedule {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9fafb;
+    padding-bottom: 60px;
+  }
+  
+  .appointment-wrapper {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .doctor-card {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .doctor-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .form-section label {
+    font-weight: 600;
+    color: #374151;
+  }
+  
+  .form-section input,
+  .form-section select {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+  }
+  
+  .btn-confirm,
+  .btn-MakeAppointment {
+    background-color: #29a645;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .btn-MakeAppointment {
+    background-color: #2563eb;
+  }
+  
+  .btn-confirm:hover,
+  .btn-MakeAppointment:hover {
+    opacity: 0.9;
+  }
+  
+  .serial-box {
+    background-color: #f3fdf7;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+    border: 1px solid #c8e6c9;
+  }
+  

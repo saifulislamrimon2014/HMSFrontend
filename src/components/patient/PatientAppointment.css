@@ -1,0 +1,109 @@
+.PatientAppointment {
+    background-color: #f3fff9;
+    min-height: 100vh;
+  }
+  
+  .appointment-wrapper {
+    padding: 0px 0px;
+  }
+  
+  .department-select {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+  }
+  
+  .department-select select {
+    margin-left: 10px;
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+  
+  .doctor-cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .doctor-card {
+    width: 320px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 20px;
+    transition: transform 0.3s ease;
+  }
+  
+  .doctor-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  .doctor-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-top: 20px;
+    border-radius: 50%;
+  }
+  
+  .doctor-info {
+    padding: 16px;
+    text-align: center;
+  }
+  
+  .doctor-info h4 {
+    color: #065f46;
+    margin-bottom: 10px;
+  }
+  
+  .button-group {
+    margin-top: 15px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  
+  .btn-primary {
+    background-color: #065f46;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .btn-ghost {
+    background-color: white;
+    color: #065f46;
+    border: 1px solid #065f46;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .btn-show-more {
+    margin-top: 40px;
+    background-color: #065f46;
+    color: white;
+    font-weight: bold;
+    padding: 8px 22px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+  .show-more-container {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  

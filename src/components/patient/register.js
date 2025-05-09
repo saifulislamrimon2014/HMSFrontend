@@ -15,11 +15,18 @@ function Register() {
     dateOfBirth: "",
     address: "",
     bloodGroup: "",
+    gender: "",
+    age: "",
+
+
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+  const gender = ["Male", "Female", "Other"];
+  const age = 0;
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -46,6 +53,7 @@ function Register() {
     if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required";
     if (!formData.address.trim()) newErrors.address = "Address is required";
     if (!formData.bloodGroup) newErrors.bloodGroup = "Blood group is required";
+    if (!formData.gender) newErrors.gender = "Gender is required";
     if (!/^01\d{9}$/.test(formData.contactNumber)) {
       newErrors.contactNumber =
         "Phone number must start with 01 and be exactly 11 digits.";
@@ -88,6 +96,19 @@ function Register() {
     return newErrors;
   };
 
+  const calculateAge = (dob) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+  
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--; // Not yet had birthday this year
+    }
+  
+    return age;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -125,6 +146,9 @@ function Register() {
         address: formData.address,
         blood_group: formData.bloodGroup,
         email_verified: false,
+        gender: formData.gender,
+        age: calculateAge(formData.dateOfBirth),
+        password: formData.password,
       };
 
       const response = await fetch("http://127.0.0.1:8000/api/save-user/", {
@@ -347,6 +371,30 @@ function Register() {
             <div className="invalid-feedback">{errors.bloodGroup}</div>
           )}
         </div>
+
+
+        <div className="mb-3">
+          <label>Gender</label>
+          <select
+            className={`form-control ${errors.gender ? "is-invalid" : ""}`}
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Gender</option>
+            {gender.map((group) => (
+              <option key={group} value={group}>
+                {group}
+              </option>
+            ))}
+          </select>
+          {errors.gender && (
+            <div className="invalid-feedback">{errors.gender}</div>
+          )}
+        </div>
+
+
 
         <div className="d-grid">
           <button

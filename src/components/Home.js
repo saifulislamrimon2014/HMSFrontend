@@ -7,12 +7,6 @@ import health from './images/health.jpg'
 import medicine from './images/medicine.jpg'
 import urology from './images/urology.jpg'
 
-
-
-
-
-
-
 import './Homepage.css'; // Assuming you'll create a corresponding CSS file
 
 const Home = () => {
@@ -46,10 +40,19 @@ const Home = () => {
                           {dropdownOpen && (
                             <ul className="dropdown-menu show" style={{ display: 'block', position: 'absolute', zIndex: 1000 }}>
                               <li>
-                                <Link className="dropdown-item" to="/login">Patient Login</Link>
+                                <Link className="dropdown-item" to="/PatientLogin">Patient Login</Link>
                               </li>
                               <li>
                                 <Link className="dropdown-item" to="/DoctorLogin">Doctor Login</Link>
+                              </li>
+                              <li>
+                                <Link className="dropdown-item" to="/TechnologistLogin">Technologist Login</Link>
+                              </li>
+                              <li>
+                                <Link className="dropdown-item" to="/AccountsLogin">Accounts Login</Link>
+                              </li>
+                              <li>
+                                <Link className="dropdown-item" to="/AdminLogin">Admin Login</Link>
                               </li>
                             </ul>
                           )}

@@ -17,32 +17,43 @@ const DoctorDashboard = () => {
   const [userDetails, setUserDetails] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch user info from Firestore
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        try {
-          const docRef = doc(db, "Users", currentUser.uid);
-          const docSnap = await getDoc(docRef);
 
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setUserDetails(data);
-          } else {
-            toast.error("No user data found", { position: "top-center" });
+    // ✅ Fetch logged-in user info
+    useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        if (currentUser) {
+          try {
+            const res = await axios.get(`http://localhost:8000/api/user/${currentUser.uid}/`);
+            setUserDetails(res.data);
+          } catch (error) {
+            console.error("Error fetching patient data:", error);
+            toast.error("User data not found", { position: "top-center" });
           }
-        } catch (error) {
-          toast.error("Error fetching user data", { position: "top-center" });
-          console.error("Error:", error);
+        } else {
+          setUserDetails(null);
+          navigate("/DoctorLogin");
         }
-      } else {
-        setUserDetails(null);
-        navigate("/login");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [navigate]);
+      });
+  
+      return () => unsubscribe();
+    }, [navigate]);
+  
+    // ✅ Fetch dashboard statistics from MongoDB
+    useEffect(() => {
+      const fetchDashboardData = async () => {
+        try {
+          const response = await axios.get('http://localhost:8000/api/api/dashboard/');
+          console.log("Dashboard data:", response.data); // 👈 Important to confirm
+          setDashboardData(response.data);
+        } catch (error) {
+          console.error("Error fetching dashboard data:", error);
+          toast.error("Error fetching dashboard data");
+        }
+      };
+    
+      fetchDashboardData();
+  }, []);
+  
 
   const handleLogout = async () => {
     try {
@@ -54,33 +65,24 @@ const DoctorDashboard = () => {
       console.error("Logout error:", error);
     }
   };
+
+
   const [dashboardData, setDashboardData] = useState({
+    DocID: 0,
     PendingAppointment: 0,
     RegisteredPatient: 0,
     Referral: 0,
-    OnlineConsulation: 0,
-  });
+    OnlineConsultation: 0,  
+});
   
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/dashboard/');
-        console.log("Dashboard data:", response.data); // 👈 See this in browser console
-        setDashboardData(response.data);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        toast.error("Error fetching dashboard data");
-      }
-    };
-  
-    fetchDashboardData();
-  }, []);
+
+
   
   return (
     <div className="DoctorDashboard">
 
-      <DoctorHeader/>
+      <DoctorHeader />
                 
       <div className="welcome-section">
                     <h3>Welcome to your panel, Dr. {userDetails?.firstName || ''}!</h3>
@@ -109,7 +111,7 @@ const DoctorDashboard = () => {
                 <div className="dashboard-card">
                     <h5>ONLINE CONSULTATIONS</h5>
                     {/* <div className="circle-progress">25%</div> */}
-                    <h2>{dashboardData.OnlineConsulation}</h2>
+                    <h2>{dashboardData.OnlineConsultation}</h2>
                 </div>
         </div>
         <DoctorFooter/>

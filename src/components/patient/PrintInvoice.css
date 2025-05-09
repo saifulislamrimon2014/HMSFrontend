@@ -1,0 +1,37 @@
+.btn-download {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.invoice-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.invoice-header h2 {
+  margin-bottom: 0;
+  color: #1a8f5c;
+}
+
+.confirmation-box {
+  border: 1px solid #ccc;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.print-area {
+  background: white;
+  padding: 30px;
+  color: black;
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+  border-radius: 8px;
+}

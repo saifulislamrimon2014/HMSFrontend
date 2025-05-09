@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DoctorHeader from "./DoctorHeader";
 import DoctorFooter from "./DoctorFooter";
 import "../Homepage.css";
@@ -10,16 +10,20 @@ import { auth } from "../firebase";
 
 const DoctorAppointmentList = () => {
   const navigate = useNavigate();
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [appointments, setAppointments] = useState([]);
   const [acceptedAppointments, setAcceptedAppointments] = useState({});
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/appointments/')
+      .then(res => res.json())
+      .then(data => setAppointments(data))
+      .catch(err => console.error("Failed to fetch appointments:", err));
+  }, []);
 
   const handleAcceptClick = (index, status) => {
     if (status.toLowerCase() === "unpaid") return;
-
-    setAcceptedAppointments((prev) => ({
-      ...prev,
-      [index]: true,
-    }));
+    setAcceptedAppointments(prev => ({ ...prev, [index]: true }));
     toast.success("Appointment Accepted");
   };
 
@@ -32,77 +36,26 @@ const DoctorAppointmentList = () => {
     navigate("/DoctorPatientDetails");
   };
 
-  const appointments = [
-    {
-      firstName: "Jane",
-      lastName: "Cooper",
-      phone: "+91 9876543210",
-      date: "13-Aug-2023",
-      time: "10:00 AM",
-      status: "Paid"
-    },
-    {
-      firstName: "Wade",
-      lastName: "Warren",
-      phone: "+91 9876543210",
-      date: "13-Aug-2023",
-      time: "10:00 AM",
-      status: "Unpaid"
-    },
-    {
-      firstName: "Jane",
-      lastName: "Cooper",
-      phone: "+91 9876543210",
-      date: "13-Aug-2023",
-      time: "10:00 AM",
-      status: "Follow-up"
-    },
-    {
-      firstName: "Wade",
-      lastName: "Warren",
-      phone: "+91 9876543210",
-      date: "13-Aug-2023",
-      time: "10:00 AM",
-      status: "Booked"
-    },
-    {
-      firstName: "Jane",
-      lastName: "Cooper",
-      phone: "+91 9876543210",
-      date: "13-Aug-2023",
-      time: "10:00 AM",
-      status: "Report Showing"
-    },
-  ];
-
   const getStatusClass = (status) => {
-    switch (status.toLowerCase()) {
-      case "paid":
-        return "status paid";
-      case "unpaid":
-        return "status unpaid";
-      case "follow-up":
-        return "status followup";
-      case "booked":
-        return "status booked";
-      case "report showing":
-        return "status report";
-      default:
-        return "status";
+    switch (status?.toLowerCase()) {
+      case "paid": return "status paid";
+      case "unpaid": return "status unpaid";
+      case "follow-up": return "status followup";
+      case "booked": return "status booked";
+      case "report showing": return "status report";
+      default: return "status";
     }
   };
 
   return (
     <div>
       <DoctorHeader />
-
       <div className="appointments-wrapper">
         <h2 className="appointments-heading">Manage Appointments</h2>
         <table className="appointments-table">
           <thead>
             <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
+              <th>Name</th>
               <th>Phone Number</th>
               <th>Appointment Date & Time</th>
               <th>Status</th>
@@ -112,19 +65,19 @@ const DoctorAppointmentList = () => {
           <tbody>
             {appointments.map((a, index) => {
               const isAccepted = acceptedAppointments[index];
-              const isUnpaid = a.status.toLowerCase() === "unpaid";
+              const isUnpaid = a.AppointmentStatus?.toLowerCase() === "unpaid";
+              const fullName = a.SelectDoctor;
 
               return (
-                <tr key={index}>
-                  <td>{a.firstName}</td>
-                  <td>{a.lastName}</td>
-                  <td>{a.phone}</td>
-                  <td>{`${a.date} at ${a.time}`}</td>
-                  <td><span className={getStatusClass(a.status)}>{a.status}</span></td>
+                <tr key={a._id}>
+                  <td>{fullName || "N/A"}</td>
+                  <td>{a.Phone}</td>
+                  <td>{new Date(a.AppointmentDate).toLocaleString()}</td>
+                  <td><span className={getStatusClass(a.AppointmentStatus)}>{a.AppointmentStatus}</span></td>
                   <td>
                     <button
                       className={`btn-accept ${isAccepted ? "accepted" : ""}`}
-                      onClick={() => handleAcceptClick(index, a.status)}
+                      onClick={() => handleAcceptClick(index, a.AppointmentStatus)}
                       disabled={isAccepted || isUnpaid}
                     >
                       {isAccepted ? "ACCEPTED" : "ACCEPT"}
@@ -132,7 +85,7 @@ const DoctorAppointmentList = () => {
 
                     <button
                       className="btn-details"
-                      onClick={() => handleDetailsClick(index, a.status)}
+                      onClick={() => handleDetailsClick(index, a.AppointmentStatus)}
                       disabled={!isAccepted || isUnpaid}
                     >
                       DETAILS
@@ -151,7 +104,6 @@ const DoctorAppointmentList = () => {
           <button>Next</button>
         </div>
       </div>
-
       <DoctorFooter />
     </div>
   );

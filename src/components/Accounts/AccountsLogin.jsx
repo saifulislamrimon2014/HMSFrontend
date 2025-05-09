@@ -3,9 +3,9 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import "./DoctorLogin.css";
+import "../doctor/DoctorLogin.css";
 
-function DoctorLogin() {
+function AccountsLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,14 +16,14 @@ function DoctorLogin() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/doctor-login/", {
+      const response = await axios.post("http://localhost:8000/api/accounts-login/", {
         email,
         password,
       });
 
       if (response.data.success) {
         toast.success("Login successful!");
-        localStorage.setItem("doctor", JSON.stringify(response.data.doctor));
+        localStorage.setItem("accounts", JSON.stringify(response.data.accounts));
         // setTimeout(() => navigate("/DoctorDashboard"), 500);
         setTimeout(500);
         window.location.href = "/DoctorDashboard"; // Redirect to DoctorDashboard
@@ -48,7 +48,7 @@ function DoctorLogin() {
           </Link>
         </div>
 
-        <h2 className="login-title">Doctor Login</h2>
+        <h2 className="login-title">Accounts Login</h2>
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
@@ -84,4 +84,6 @@ function DoctorLogin() {
   );
 }
 
-export default DoctorLogin;
+export default AccountsLogin;
+
+
